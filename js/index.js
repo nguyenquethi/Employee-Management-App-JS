@@ -85,6 +85,7 @@ function getLocalStorage(key) {
 
     if(arrLocal) {
         arrStudent = arrLocal;
+        renderDisplay();
     }
 }
 
