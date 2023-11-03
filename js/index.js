@@ -8,21 +8,62 @@ var arrIdInput = [
     'chucvu',
     'gioLam',
 ];
+
+var arrSpan = [
+    'tbTKNV',
+    'tbTen',
+    'tbEmail',
+    'tbMatKhau',
+    'tbNgay',
+    'tbLuongCB',
+    'tbChucVu',
+    'tbGiolam',
+];
 var arrStudent = [];
 function getValueUser() {
     var student  = new Student();
+    isValid = true;
     for (var i = 0; i < arrIdInput.length; i++) {
         var userInput = document.getElementById(arrIdInput[i]).value;
-        console.log(userInput);
+        // console.log(userInput);
+
+        if (arrIdInput[i] == 'email') {
+            isValid &=
+              checkEmptyValue(userInput, arrSpan[i]) &&
+              checkEmailValue(userInput, arrSpan[i]);
+          } else if (arrIdInput[i] == 'password') {
+            isValid &=
+              checkEmptyValue(userInput, arrSpan[i]) &&
+              checkMinMaxValue(userInput, arrSpan[i], 6, 10);
+          } else {
+            isValid &= checkEmptyValue(userInput, arrSpan[i]);
+          }
+
         student[arrIdInput[i]] = userInput;
     }
 
-    arrStudent.push(student);
-    saveLocalStorage("arrStudent", arrStudent);
-    console.log(arrStudent);
-    renderDisplay();
-    document.getElementById('formQLSV').reset(); 
+    if (isValid) {
+        // arrStudent.push(student);
+        // saveLocalStorage("arrStudent", arrStudent);
+        // console.log(arrStudent);
+        // renderDisplay();
+        // document.getElementById('formQLSV').reset(); 
+
+        return student;
+    }
+    
 };
+
+function addUser() {
+    var student  = getValueUser();
+    if(student) {
+        arrStudent.push(student);
+        saveLocalStorage("arrStudent", arrStudent);
+        console.log(arrStudent);
+        renderDisplay();
+        document.getElementById('formQLSV').reset();
+    } 
+}
 
 function renderDisplay (arr) {
     if (!arr) {
@@ -46,15 +87,14 @@ function renderDisplay (arr) {
             <td>${student.tinhTongLuong()}</td>
             <td>${student.xepLoai()}</td>
             <td>
-            <button onclick="deleteUser('${valueStudent.tknv}')" class="btn btn-danger">Delete</button>
-            <button class="btn btn-dark">Edit</button>
+            <button onclick="deleteUser('${student.tknv}')" class="btn btn-danger">Delete</button>
             </td>
         </tr>`;
     }
     document.getElementById('tableDanhSach').innerHTML = content;
 };
 
-document.getElementById('btnThemNV').onclick = getValueUser;
+document.getElementById('btnThemNV').onclick = addUser;
 
 function deleteUser(maSV) {
     console.log(maSV);
@@ -69,10 +109,15 @@ function deleteUser(maSV) {
 
     if (index != -1) {
         arrStudent.splice(index, 1);
+        saveLocalStorage('arrStudent', arrStudent);
         renderDisplay();
         console.log(arrStudent);
     }
- };
+};
+
+
+
+document.getElementById('btnCapNhat').onclick = editValue;
 
 function saveLocalStorage(key, value) {
     var valueString = JSON.stringify(value);
